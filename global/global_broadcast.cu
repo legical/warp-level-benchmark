@@ -4,11 +4,13 @@
 #define DATATYPE int
 #define SMEMSIZE 1024
 #define REP 128
+//The higher the conflictnum, the greater the broadcasting degree
 #define conflictnum 32
 
 __global__ void global_broadcast(double *time,const DATATYPE *in1,const DATATYPE *in2,DATATYPE *out,int its)
 {
 	unsigned int tid=threadIdx.x;
+	//consecutive conflictnum of threads access the same array index
 	DATATYPE p,q=(threadIdx.x/conflictnum*conflictnum);
 	double time_tmp=0.0;
 	unsigned int start_time=0,stop_time=0;

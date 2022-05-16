@@ -1,3 +1,4 @@
+//Accessing constraints testings
 #include <stdlib.h>
 #include <stdio.h>
 #include <cuda_runtime.h>
@@ -82,6 +83,8 @@ int main_test(int blocks,int threads,DATATYPE *h_in1,DATATYPE *h_in2,int xxx)
 	free(h_time);
 	return 0;
 }
+
+//one to one order | case 1
 void init_order(DATATYPE *a,int n)
 {
 	for (int i=0;i<n;i++)
@@ -89,19 +92,26 @@ void init_order(DATATYPE *a,int n)
 		a[i]=i;
 	}
 }
+
+//consecutive but misaligned | case 2
 void init_disordered_32(DATATYPE *a,int n)
 {
+	//initial array p (order)
 	DATATYPE p[32];
 	for (int i=0;i<32;i++)
 	{
 		p[i]=i;
 	}
+
 	for (int i=0;i<n;i+=32)
 	{
 		for (int j=0;j<32;j++)
 		{
+			//jj = 0 ~ 32-j-1 (random 0~31)
 			int jj=rand()%(32-j);
+			//a every 32 index, is random 0~31
 			a[i+j]=p[jj];
+			//p[jj] has been allocated, so use p[jj+1] cover p[jj]
 			for (int k=jj;k<(32-j);k++)
 			{
 				p[k]=p[k+1];
@@ -109,11 +119,15 @@ void init_disordered_32(DATATYPE *a,int n)
 		}
 		for (int j=0;j<32;j++)
 		{
+			//let p_array initial 0~31
 			p[j]=a[i+j];
+			//a[i+j] = i + (random 0~31)
 			a[i+j]+=i;
 		}
 	}
 }
+
+
 void init_disordered_512(DATATYPE *a,int n)
 {
 	const int nn=n/32;
@@ -131,15 +145,20 @@ void init_disordered_512(DATATYPE *a,int n)
 	{
 		for (int j=0;j<nn;j++)
 		{
+			//use random q[jj] to fill every 32 elements of b
+			//nn-j is decending, so q[jj] is getting smaller
 			int jj=rand()%(nn-j);
 			b[i+j]=q[jj];
 			for (int k=jj;k<(nn-j);k++)
 			{
+				//The already used q[k] will be overwritten by the highly indexed element
 				q[k]=q[k+1];
 			}
 		}
+
 		for (int j=0;j<nn;j++)
 		{
+			//q[] repossesses a random 32 elements from b[i+j]
 			q[j]=b[i+j];
 		}
 	}

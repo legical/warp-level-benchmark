@@ -1,3 +1,4 @@
+//6.1 bank conflict in shared memory
 //Tesla k20c 
 // L1 Cache	16 KB (per SMX)
 // L2 Cache	1280 KB

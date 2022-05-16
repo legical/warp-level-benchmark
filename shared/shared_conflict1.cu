@@ -1,3 +1,7 @@
+//model 2 -- 6.1 bank conflict in shared memory
+//连续conflictnum数的thread访问同一个array index
+//Threads in consecutive conflictnum access the index of an array
+//index = i * conflictnum ,  i = 1,2,3,4,5,6…… 
 #include <stdlib.h>
 #include <stdio.h>
 #include <cuda_runtime.h>
@@ -18,6 +22,7 @@ __global__ void shared_model_1(double *time,DATATYPE *in1,DATATYPE *in2,DATATYPE
 		tid+=blockDim.x;
 	}
 //	DATATYPE p,q=(threadIdx.x/conflictnum);
+//连续conflictnum数的thread访问同一个array index
 	DATATYPE p,q=(threadIdx.x/conflictnum*conflictnum);
 	double time_tmp=0.0;
 	unsigned int start_time=0,stop_time=0;
